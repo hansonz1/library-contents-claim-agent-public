@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Library Contents Claim Agent</title>
+<style>
+  body { font: 16px system-ui; max-width: 42rem; margin: 4rem auto; padding: 0 1rem; }
+  button { font: inherit; padding: .55rem .9rem; }
+  li { padding: .2rem 0; }
+  video { display: block; width: 100%; max-width: 32rem; margin: 1rem 0; }
+  video[hidden] { display: none; }
+</style>
+<h1>Library Contents Claim Agent</h1>
+<button id="start-preview">Start preview</button>
+<button id="stop-preview" disabled>Stop preview</button>
+<p id="preview-status" role="status">Camera and microphone are off.</p>
+<video id="preview" autoplay muted playsinline hidden></video>
+<label>Microphone level <meter id="mic-level" min="0" max="1" value="0"></meter></label>
+<p><button id="start-sweep" disabled>Start sweep</button>
+<button id="stop-sweep" disabled>Stop sweep</button></p>
+<label><input id="sweep-voice-mode" type="checkbox"> Pause after first frame for a voice question</label>
+<button id="ask-sweep" disabled>Ask Gemini · 4 seconds</button>
+<h2>Live inventory</h2>
+<label>Import sweep evidence <input id="import-sweep" type="file" accept=".json,application/json"></label>
+<button id="voice-correction" disabled>Correct a title by voice</button>
+<button id="apply-correction" disabled>Apply title change</button>
+<p id="correction-status" role="status"></p>
+<ul id="sweep-inventory" aria-live="polite"></ul>
+<p id="sweep-review" role="status"></p>
+<ol id="sweep-feedback" aria-live="polite"></ol>
+<p id="sweep-status" role="status"></p>
+<p id="sweep-check"></p>
+<p id="sweep-audio-status" role="status"></p>
+<button id="test-voice" disabled>Test microphone · 4 seconds</button>
+<p id="voice-status" role="status"></p>
+<button id="download-sweep" disabled>Download sweep evidence</button>
+<hr>
+<button id="test-live" disabled>Test Live</button>
+<p id="live-status" role="status"></p>
+<label>Bookshelf photo <input id="shelf-photo" type="file" accept="image/*"></label>
+<button id="test-image" disabled>Send photo to Gemini</button>
+<label><input id="inventory-mode" type="checkbox"> List all visible books</label>
+<button id="capture-frame" disabled>Send camera frame to Gemini</button>
+<p id="image-status" role="status" style="white-space: pre-wrap"></p>
+<button id="scan" disabled>Load mock inventory</button>
+<p id="status" role="status">Connecting locally…</p>
+<ol id="books"></ol>
+<script>
+const shelfPhoto = document.querySelector("#shelf-photo");
+const captureFrame = document.querySelector("#capture-frame");
+let imagePending = false;
+let sweepSocket;
+const startSweep = document.querySelector("#start-sweep");
+const stopSweep = document.querySelector("#stop-sweep");
+const sweepFeedback = document.querySelector("#sweep-feedback");
+const sweepStatus = document.querySelector("#sweep-status");
+const sweepCheck = document.querySelector("#sweep-check");
+const testVoice = document.querySelector("#test-voice");
+const voiceStatus = document.querySelector("#voice-status");
+let voicePending = false;
+let cancelRecording;
+const sweepAudioStatus = document.querySelector("#sweep-audio-status");
+let recordSweepStop;
+const sweepVoiceMode = document.querySelector("#sweep-voice-mode");
+const askSweep = document.querySelector("#ask-sweep");
+let evidence;
+let sweepAudio;
+const downloadSweep = document.querySelector("#download-sweep");
+
+const importSweep = document.querySelector("#import-sweep");
+const voiceCorrection = document.querySelector("#voice-correction");
+const applyCorrection = document.querySelector("#apply-correction");
+const correctionStatus = document.querySelector("#correction-status");
+const inventoryList = document.querySelector("#sweep-inventory");
+let pendingCorrection;
+
+function titleKey(title) {
+  return title.normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function renderInventory(run) {
+  inventoryList.replaceChildren(...run.inventory.map(entry => {
+    const row = document.createElement("li");
+    row.textContent = entry.title;
+    return row;
+  }));
+}
+
+importSweep.onchange = async () => {
+  const file = importSweep.files[0];
+  if (!file) return;
+  try {
+    const run = JSON.parse(await file.text());
+    if (sweepSocket || voicePending || importSweep.files[0] !== file) return;
+    if (typeof run.id !== "string" || !Array.isArray(run.frames) ||
+        !Array.isArray(run.inventory) ||
+        !run.inventory.every(entry => typeof entry.title === "string" && Array.isArray(entry.frames))) {
+      throw new Error();
+    }
+    evidence = run;
+    pendingCorrection = undefined;
+    applyCorrection.disabled = true;
+    renderInventory(run);
+    correctionStatus.textContent = "Loaded " + run.inventory.length + " title candidates.";
+    downloadSweep.disabled = false;
+    updateImageButtons();
+  } catch {
+    correctionStatus.textContent = "Could not import sweep evidence.";
+  }
+};
+
+applyCorrection.onclick = () => {
+  if (!pendingCorrection || pendingCorrection.run !== evidence) return;
+  const {entry, title, heard} = pendingCorrection;
+  evidence.corrections ??= [];
+  evidence.corrections.push({
+    previous_title: entry.title, title, heard, frames: [...entry.frames],
+    applied_at: new Date().toISOString(),
+  });
+  entry.title = title;
+  renderInventory(evidence);
+  pendingCorrection = undefined;
+  applyCorrection.disabled = true;
+  correctionStatus.textContent = "Title updated. Original frame evidence retained.";
+};
+
+function playSweepReply(encoded) {
+  if (!encoded) {
+    sweepAudioStatus.textContent = "No audio received. Restart FastAPI with the latest code.";
+    return;
+  }
+  if (!audioContext || audioContext.state !== "running") {
+    sweepAudioStatus.textContent = "Audio is blocked. Restart the preview to enable playback.";
+    return;
+  }
+  const raw = Uint8Array.from(atob(encoded), character => character.charCodeAt(0));
+  const pcm = new DataView(raw.buffer);
+  const buffer = audioContext.createBuffer(1, raw.length / 2, 24000);
+  const samples = buffer.getChannelData(0);
+  for (let i = 0; i < samples.length; i++) samples[i] = pcm.getInt16(i * 2, true) / 32768;
+  sweepAudio?.stop();
+  const source = audioContext.createBufferSource();
+  source.buffer = buffer;
+  source.connect(audioContext.destination);
+  source.onended = () => {
+    if (sweepAudio === source) sweepAudio = undefined;
+  };
+  sweepAudio = source;
+  source.start();
+  sweepAudioStatus.textContent = "Gemini audio received and scheduled for playback.";
+}
+
+downloadSweep.onclick = () => {
+  if (!evidence) return;
+  const blob = new Blob([JSON.stringify(evidence, null, 2)], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "sweep-" + evidence.id + ".json";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+const testImage = document.querySelector("#test-image");
+const inventoryMode = document.querySelector("#inventory-mode");
+const imageStatus = document.querySelector("#image-status");
+function updateImageButtons() {
+  testImage.disabled = imagePending || !shelfPhoto.files.length;
+  startSweep.disabled = Boolean(sweepSocket) || !preview.srcObject || preview.readyState < 2;
+  stopSweep.disabled = !sweepSocket;
+  importSweep.disabled = Boolean(sweepSocket) || voicePending;
+  voiceCorrection.disabled = voicePending || Boolean(sweepSocket) ||
+    !preview.srcObject || !evidence?.inventory?.length;
+  startSweep.disabled ||= voicePending;
+  testVoice.disabled = voicePending || Boolean(sweepSocket) || !preview.srcObject;
+  captureFrame.disabled = imagePending || !preview.srcObject || preview.readyState < 2;
+}
+
+function encodeFrame(source) {
+  const width = source.videoWidth ?? source.width;
+  const height = source.videoHeight ?? source.height;
+  const canvas = document.createElement("canvas");
+  const scale = Math.min(1, 1024 / Math.max(width, height));
+  canvas.width = Math.max(1, Math.round(width * scale));
+  canvas.height = Math.max(1, Math.round(height * scale));
+  canvas.getContext("2d").drawImage(source, 0, 0, canvas.width, canvas.height);
+  return new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", 0.8));
+}
+
+startSweep.onclick = () => {
+  const url = new URL("/sweep", location.href);
+  url.protocol = location.protocol === "https:" ? "wss:" : "ws:";
+  const connection = new WebSocket(url);
+  sweepSocket = connection;
+  const voiceMode = sweepVoiceMode.checked;
+  sweepVoiceMode.disabled = true;
+  askSweep.onclick = async () => {
+    askSweep.disabled = true;
+    sweepAudio?.stop();
+    voiceStatus.textContent = "Speak now. Recording for four seconds…";
+    try {
+      const pcm = await recordVoice(stream);
+      if (connection.readyState !== WebSocket.OPEN) return;
+      if (!pcm) throw new Error();
+      connection.send(new Blob(["PCM:", pcm]));
+      voiceStatus.textContent = "Waiting for the sweep reply…";
+    } catch {
+      voiceStatus.textContent = "Could not record the sweep question.";
+      if (connection.readyState === WebSocket.OPEN) askSweep.disabled = false;
+    }
+  };
+  sweepFeedback.replaceChildren();
+  sweepAudioStatus.textContent = "";
+  const sessionId = crypto.randomUUID();
+  const startedAt = new Date().toISOString();
+  const feedback = [];
+  const inventory = document.querySelector("#sweep-inventory");
+  const review = document.querySelector("#sweep-review");
+  inventory.replaceChildren();
+  review.textContent = "";
+  const titles = new Map();
+  const run = {id: sessionId, started_at: startedAt, frames: [], inventory: [], review: []};
+  evidence = run;
+  pendingCorrection = undefined;
+  applyCorrection.disabled = true;
+  correctionStatus.textContent = "";
+  downloadSweep.disabled = true;
+  sweepCheck.textContent = "Sweep " + sessionId + " · Start " + startedAt;
+  recordSweepStop = () => {
+    const stoppedAt = new Date().toISOString();
+    run.stopped_at = stoppedAt;
+    run.end_reason = "manual_stop";
+    sweepCheck.textContent = "Sweep " + sessionId + " · Start " + startedAt +
+      " · Feedback " + feedback.map(entry => entry.at).join(", ") +
+      " · Stop " + stoppedAt + " · " +
+      (new Set(feedback.map(entry => entry.text)).size >= 2 ? "PASS" : "Partial Pass");
+  };
+  sweepStatus.textContent = "Connecting to Gemini Live…";
+  updateImageButtons();
+
+  async function sendNextFrame() {
+    if (connection.readyState !== WebSocket.OPEN) return;
+    try {
+      const jpeg = await encodeFrame(preview);
+      if (connection.readyState !== WebSocket.OPEN) return;
+      if (!jpeg || jpeg.size > 512 * 1024) throw new Error();
+      const bytes = new Uint8Array(await jpeg.arrayBuffer());
+      if (connection.readyState !== WebSocket.OPEN) return;
+      let binary = "";
+      for (const byte of bytes) binary += String.fromCharCode(byte);
+      run.frames.push({
+        frame: run.frames.length + 1,
+        sent_at: new Date().toISOString(),
+        image: "data:image/jpeg;base64," + btoa(binary),
+      });
+      connection.send(jpeg);
+    } catch {
+      sweepStatus.textContent = "Could not capture a sweep frame.";
+      connection.close();
+    }
+  }
+
+  connection.onmessage = ({data}) => {
+    if (connection.readyState !== WebSocket.OPEN) return;
+    const event = JSON.parse(data);
+    if (event.type === "ready") {
+      if (voiceMode && !event.supports_voice) {
+        sweepStatus.textContent = "This FastAPI process needs a restart to support sweep voice.";
+        connection.close();
+        return;
+      }
+      sweepStatus.textContent = "Sweep active · up to 3 frames";
+      sendNextFrame();
+    } else if (event.type === "feedback") {
+      const item = document.createElement("li");
+      item.textContent = event.message;
+      sweepFeedback.append(item);
+      const hasTranscript = event.has_transcript ??
+        Boolean(event.message?.trim() && event.message !== "No transcript for this frame.");
+      const frame = run.frames[event.frame - 1];
+      if (frame) {
+        frame.transcript = hasTranscript ? event.message : null;
+        frame.feedback_at = new Date().toISOString();
+        for (const title of event.titles ?? []) {
+          const key = titleKey(title);
+          if (!key) continue;
+          let entry = titles.get(key);
+          if (!entry) {
+            entry = {title, frames: []};
+            titles.set(key, entry);
+            run.inventory.push(entry);
+            const book = document.createElement("li");
+            book.textContent = title;
+            inventory.append(book);
+          }
+          if (!entry.frames.includes(event.frame)) entry.frames.push(event.frame);
+        }
+        if (event.needs_review) {
+          run.review.push({frame: event.frame, reason: "Frame needs a clearer view or manual title review."});
+          review.textContent = run.review.length + " frame(s) need review.";
+        }
+        downloadSweep.disabled = false;
+      }
+      try {
+        playSweepReply(event.audio_pcm);
+      } catch {
+        sweepStatus.textContent = "Audio playback failed. Transcript is available.";
+      }
+      if (hasTranscript) {
+        feedback.push({text: event.message.trim().toLowerCase(), at: new Date().toISOString()});
+      }
+      if (voiceMode && event.frame === 1) {
+        sweepStatus.textContent = "First frame received. Ask a voice question or stop the sweep.";
+        askSweep.disabled = false;
+      } else if (event.frame < 3) {
+        setTimeout(sendNextFrame, 1500);
+      }
+    } else if (event.type === "voice_feedback") {
+      voiceStatus.textContent = "Heard: " + (event.heard || "(no input transcript)") +
+        " | Reply: " + (event.message || "(no reply transcript)");
+      run.voice = {frame_ref: 1, heard: event.heard, reply: event.message};
+      sweepStatus.textContent = "Sweep active · voice reply received";
+      playSweepReply(event.audio_pcm);
+      setTimeout(sendNextFrame, 1500);
+    } else {
+      sweepStatus.textContent = event.message ?? "Sweep complete.";
+      if (event.type === "error" && voiceStatus.textContent === "Waiting for the sweep reply…") {
+        voiceStatus.textContent = event.message;
+      }
+    }
+  };
+  connection.onclose = () => {
+    if (voiceStatus.textContent === "Waiting for the sweep reply…") {
+      voiceStatus.textContent = "Sweep closed before Gemini returned a voice reply.";
+    }
+    cancelRecording?.();
+    askSweep.disabled = true;
+    sweepVoiceMode.disabled = false;
+    if (sweepStatus.textContent.startsWith("Connecting") ||
+        sweepStatus.textContent.startsWith("Sweep active")) {
+      sweepStatus.textContent = "Sweep connection closed.";
+    }
+    if (!run.stopped_at) {
+      run.stopped_at = new Date().toISOString();
+      run.end_reason = sweepStatus.textContent === "Sweep complete." ? "frame_limit" : "connection_closed";
+    }
+    sweepSocket = undefined;
+    recordSweepStop = undefined;
+    updateImageButtons();
+  };
+};
+
+stopSweep.onclick = () => {
+  recordSweepStop?.();
+  sweepAudio?.stop();
+  sweepStatus.textContent = "Sweep stopped.";
+  sweepSocket?.close();
+};
+
+async function sendImage(fromCamera) {
+  imagePending = true;
+  updateImageButtons();
+  shelfPhoto.disabled = true;
+  inventoryMode.disabled = true;
+  const inventory = inventoryMode.checked;
+  imageStatus.textContent = "Preparing one photo for Gemini Live…";
+  try {
+    const bitmap = fromCamera ? null : await createImageBitmap(shelfPhoto.files[0]);
+    const jpeg = await encodeFrame(bitmap ?? preview);
+    bitmap?.close();
+    if (!jpeg || jpeg.size > 512 * 1024) {
+      imageStatus.textContent = "Could not prepare a JPEG under 512 KiB.";
+      return;
+    }
+    imageStatus.textContent = "Waiting for Gemini Live…";
+    const response = await fetch("/test-image?inventory=" + inventory, {method: "POST", body: jpeg});
+    const result = await response.json();
+    imageStatus.textContent = result.message;
+  } catch (error) {
+    imageStatus.textContent = "Could not test photo: " + error.name;
+  } finally {
+    shelfPhoto.disabled = false;
+    inventoryMode.disabled = false;
+    imagePending = false;
+    updateImageButtons();
+  }
+}
+
+const startPreview = document.querySelector("#start-preview");
+const stopPreview = document.querySelector("#stop-preview");
+const preview = document.querySelector("#preview");
+const previewStatus = document.querySelector("#preview-status");
+const micLevel = document.querySelector("#mic-level");
+shelfPhoto.onchange = updateImageButtons;
+preview.onloadeddata = updateImageButtons;
+testImage.onclick = () => sendImage(false);
+captureFrame.onclick = () => sendImage(true);
+let stream;
+let audioContext;
+let frame;
+
+async function recordVoice(recordingStream) {
+  const source = audioContext.createMediaStreamSource(recordingStream);
+  const processor = audioContext.createScriptProcessor(1024, 1, 1);
+  const rate = audioContext.sampleRate;
+  const samples = new Float32Array(Math.floor(rate * 4));
+  let written = 0;
+  await new Promise(resolve => {
+    const timer = setTimeout(finish, 4000);
+    function finish() {
+      clearTimeout(timer);
+      source.disconnect();
+      processor.disconnect();
+      processor.onaudioprocess = null;
+      cancelRecording = undefined;
+      resolve();
+    }
+    cancelRecording = finish;
+    processor.onaudioprocess = event => {
+      const chunk = event.inputBuffer.getChannelData(0);
+      const count = Math.min(chunk.length, samples.length - written);
+      samples.set(chunk.subarray(0, count), written);
+      written += count;
+    };
+    source.connect(processor);
+    processor.connect(audioContext.destination);
+  });
+  if (stream !== recordingStream) return;
+  if (!written) throw new Error();
+  const resampler = new OfflineAudioContext(1, Math.floor(written * 16000 / rate), 16000);
+  const input = resampler.createBuffer(1, written, rate);
+  input.copyToChannel(samples.subarray(0, written), 0);
+  const playback = resampler.createBufferSource();
+  playback.buffer = input;
+  playback.connect(resampler.destination);
+  playback.start();
+  const rendered = (await resampler.startRendering()).getChannelData(0);
+  if (stream !== recordingStream) return;
+  const pcm = new DataView(new ArrayBuffer(rendered.length * 2));
+  rendered.forEach((sample, i) => {
+    pcm.setInt16(i * 2, Math.max(-32768, Math.min(32767, sample * 32768)), true);
+  });
+  return pcm.buffer;
+}
+
+testVoice.onclick = () => runVoiceTest(false);
+voiceCorrection.onclick = () => runVoiceTest(true);
+
+async function runVoiceTest(correctTitle) {
+  if (correctTitle) {
+    pendingCorrection = undefined;
+    applyCorrection.disabled = true;
+    correctionStatus.textContent = "";
+  }
+  const recordingStream = stream;
+  voicePending = true;
+  updateImageButtons();
+  voiceStatus.textContent = "Speak now. Recording for four seconds…";
+  try {
+    const audio = await recordVoice(recordingStream);
+    if (!audio || stream !== recordingStream) return;
+    voiceStatus.textContent = "Waiting for Gemini Live…";
+    const response = await fetch("/test-voice", {
+      method: "POST", headers: {"Content-Type": "audio/pcm"}, body: audio,
+    });
+    const result = await response.json();
+    if (stream !== recordingStream) return;
+    voiceStatus.textContent = result.error ??
+      ("Heard: " + (result.heard || "(no input transcript)") +
+       " | Reply: " + (result.reply || "(no reply transcript)"));
+    if (correctTitle && !result.error) {
+      const heard = result.heard || "";
+      const match = heard.match(/^\s*(?:change|rename)\s+(.+?)\s+to\s+(.+?)[.!?\s]*$/iu) || heard.match(/^\s*把(.+?)改成(.+?)[。！？.!?\s]*$/u);
+      const clean = value => value.trim().replace(/^[《「“"]+|[》」”"]+$/gu, "").trim();
+      const previous = match ? clean(match[1]) : "";
+      const title = match ? clean(match[2]) : "";
+      const entry = evidence.inventory.find(book => titleKey(book.title) === titleKey(previous));
+      if (!entry || !title || evidence.inventory.some(book => titleKey(book.title) === titleKey(title))) {
+        correctionStatus.textContent = "No change proposed. Say: Change OLD TITLE to NEW TITLE.";
+      } else {
+        pendingCorrection = {run: evidence, entry, title, heard: result.heard};
+        applyCorrection.disabled = false;
+        correctionStatus.textContent = entry.title + " → " + title;
+      }
+    } else if (!result.error) {
+      playSweepReply(result.audio_pcm);
+    }
+  } catch {
+    voiceStatus.textContent = "Could not complete microphone test.";
+  } finally {
+    voicePending = false;
+    updateImageButtons();
+  }
+}
+
+function releasePreview() {
+  cancelRecording?.();
+  voiceStatus.textContent = "";
+  if (sweepSocket) stopSweep.click();
+  cancelAnimationFrame(frame);
+  stream?.getTracks().forEach(track => track.stop());
+  stream = undefined;
+  audioContext?.close();
+  audioContext = undefined;
+  preview.srcObject = null;
+  updateImageButtons();
+  preview.hidden = true;
+  micLevel.value = 0;
+  startPreview.disabled = false;
+  stopPreview.disabled = true;
+}
+
+startPreview.onclick = async () => {
+  startPreview.disabled = true;
+  previewStatus.textContent = "Waiting for camera and microphone access…";
+  try {
+    audioContext = new AudioContext();
+    const audioReady = audioContext.resume();
+    const mediaReady = navigator.mediaDevices.getUserMedia({video: true, audio: true});
+    stream = await mediaReady;
+    await audioReady;
+    const analyser = audioContext.createAnalyser();
+    audioContext.createMediaStreamSource(stream).connect(analyser);
+    const samples = new Float32Array(analyser.fftSize);
+    function updateLevel() {
+      analyser.getFloatTimeDomainData(samples);
+      micLevel.value = Math.sqrt(samples.reduce((sum, sample) => sum + sample ** 2, 0) / samples.length);
+      frame = requestAnimationFrame(updateLevel);
+    }
+    preview.srcObject = stream;
+    preview.hidden = false;
+    updateLevel();
+    stopPreview.disabled = false;
+    previewStatus.textContent = "Local preview is on.";
+  } catch (error) {
+    releasePreview();
+    previewStatus.textContent = "Could not start preview: " + error.name;
+  }
+};
+
+stopPreview.onclick = () => {
+  releasePreview();
+  previewStatus.textContent = "Camera and microphone are off.";
+};
+
+const scan = document.querySelector("#scan");
+const testLive = document.querySelector("#test-live");
+const liveStatus = document.querySelector("#live-status");
+const status = document.querySelector("#status");
+const books = document.querySelector("#books");
+const url = new URL("/ws", location.href);
+url.protocol = location.protocol === "https:" ? "wss:" : "ws:";
+const socket = new WebSocket(url);
+socket.onopen = () => {
+  scan.disabled = false;
+  testLive.disabled = false;
+  status.textContent = "Connected · Local mock";
+};
+socket.onclose = () => {
+  scan.disabled = true;
+  testLive.disabled = true;
+  liveStatus.textContent = "Disconnected. Reload to reconnect.";
+  status.textContent = "Disconnected. Reload to reconnect.";
+};
+scan.onclick = () => {
+  if (socket.readyState === WebSocket.OPEN) socket.send("scan");
+};
+testLive.onclick = () => {
+  if (socket.readyState !== WebSocket.OPEN) return;
+  testLive.disabled = true;
+  liveStatus.textContent = "Waiting for Gemini Live…";
+  socket.send("test_live");
+};
+socket.onmessage = ({data}) => {
+  const message = JSON.parse(data);
+  if (message.type === "live_result") {
+    liveStatus.textContent = message.message;
+    testLive.disabled = false;
+    return;
+  }
+  if (message.type === "error") {
+    status.textContent = message.message;
+    return;
+  }
+  books.replaceChildren(...message.books.map(({id, title}) => {
+    const item = document.createElement("li");
+    item.textContent = id + " · " + title;
+    return item;
+  }));
+  status.textContent = message.books.length + " synthetic books · Local mock";
+};
+</script>
+</html>

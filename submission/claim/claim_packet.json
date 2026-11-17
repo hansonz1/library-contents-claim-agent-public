@@ -1,0 +1,973 @@
+{
+  "sweep": {
+    "id": "9556dbc3-0aba-4766-a65f-a9903ea3978e",
+    "captured_at": "2026-11-17T18:01:22.929Z",
+    "device": "",
+    "duration_s": 41.114,
+    "country": "US",
+    "currency": "USD"
+  },
+  "room": {
+    "length_m": null,
+    "width_m": null,
+    "height_m": null,
+    "floor_area_m2": null,
+    "wall_area_m2": null,
+    "shelved_wall_area_m2": null,
+    "scale_method": "",
+    "confidence": null
+  },
+  "books": [
+    {
+      "id": "B001",
+      "title": "影响力有原书第5版(教材版)",
+      "author": "罗伯特-西奥迪尼",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 44.47,
+        "used_usd": 7.28,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B01A88866S",
+        "listing_isbn": "9787547012123",
+        "review": "verify print offer and edition"
+      }
+    },
+    {
+      "id": "B002",
+      "title": "The Unspoken Rules",
+      "author": "NG",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 15.35,
+        "used_usd": null,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/1647820448",
+        "listing_isbn": "9781647820442",
+        "review": "verify print offer and edition"
+      }
+    },
+    {
+      "id": "B003",
+      "title": "never eat alone",
+      "author": "Keith Ferrazzi and Tahl Raz",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 11.01,
+        "used_usd": 3.99,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B00H6JBFOS",
+        "listing_isbn": "9780385346665",
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B004",
+      "title": "Why should the boss listen to you?",
+      "author": "Lukaszewski",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": null,
+        "used_usd": null,
+        "used_condition": null,
+        "url": null,
+        "listing_isbn": null,
+        "review": "no offer supplied"
+      }
+    },
+    {
+      "id": "B005",
+      "title": "Alpha Male Bible",
+      "author": "Sean Wayne",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 9.99,
+        "used_usd": 3.99,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B017TXNR2S",
+        "listing_isbn": null,
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B006",
+      "title": "How to Love Better",
+      "author": "Yung  Pueblo",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 9.72,
+        "used_usd": 4.22,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B0D7RQDJJG",
+        "listing_isbn": "9780593582282",
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B007",
+      "title": "The worth of water",
+      "author": "Gary White and Matt Damon",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 17.99,
+        "used_usd": 2.43,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B096DGYX1S",
+        "listing_isbn": "9780593189986",
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B008",
+      "title": "Zero to One",
+      "author": "Peter Thiel",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 10.5,
+        "used_usd": 5.03,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B00J6YBOFQ",
+        "listing_isbn": "9780804139304",
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B009",
+      "title": "essentialism",
+      "author": "Greg McKeown",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 10.48,
+        "used_usd": 2.04,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B00G1J1D28",
+        "listing_isbn": "9780804137393",
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B010",
+      "title": "成功学全书 上",
+      "author": "拿破仑-希尔",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": null,
+        "used_usd": null,
+        "used_condition": null,
+        "url": null,
+        "listing_isbn": null,
+        "review": "no offer supplied"
+      }
+    },
+    {
+      "id": "B011",
+      "title": "成功学全书 下",
+      "author": "拿破仑-希尔",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": null,
+        "used_usd": null,
+        "used_condition": null,
+        "url": null,
+        "listing_isbn": null,
+        "review": "no offer supplied"
+      }
+    },
+    {
+      "id": "B012",
+      "title": "围城",
+      "author": "钱钟书",
+      "status": "identified",
+      "identification_basis": "sweep title matched to manual inventory",
+      "shelf": null,
+      "position": null,
+      "frame_ref": "frame-002.jpg",
+      "frame_refs": [
+        "frame-002.jpg"
+      ],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": null,
+        "used_usd": null,
+        "used_condition": null,
+        "url": null,
+        "listing_isbn": null,
+        "review": "no offer supplied"
+      }
+    },
+    {
+      "id": "B013",
+      "title": "The HyperLocal HyperFast Real Estate Agent",
+      "author": "Daniel James Lesniak",
+      "status": "identified",
+      "identification_basis": "sweep title matched to manual inventory",
+      "shelf": null,
+      "position": null,
+      "frame_ref": "frame-002.jpg",
+      "frame_refs": [
+        "frame-002.jpg"
+      ],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 14.23,
+        "used_usd": 1.52,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B06XBMRXVF",
+        "listing_isbn": null,
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B014",
+      "title": "Uptime",
+      "author": "Laura Mae Martin",
+      "status": "identified",
+      "identification_basis": "sweep title matched to manual inventory",
+      "shelf": null,
+      "position": null,
+      "frame_ref": "frame-002.jpg",
+      "frame_refs": [
+        "frame-002.jpg"
+      ],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 10.99,
+        "used_usd": 2.67,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B0C7W2KG3R",
+        "listing_isbn": "9780063317468",
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B015",
+      "title": "Mastering the Market Cycle",
+      "author": "Howard Marks",
+      "status": "identified",
+      "identification_basis": "sweep title matched to manual inventory",
+      "shelf": null,
+      "position": null,
+      "frame_ref": "frame-002.jpg",
+      "frame_refs": [
+        "frame-002.jpg"
+      ],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 13.4,
+        "used_usd": 5,
+        "used_condition": "Used Good",
+        "url": "https://www.amazon.com/dp/B078977BRM",
+        "listing_isbn": "9781328480569",
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B016",
+      "title": "白色绵羊里的黑色绵羊",
+      "author": "双雪涛",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": null,
+        "used_usd": null,
+        "used_condition": null,
+        "url": null,
+        "listing_isbn": null,
+        "review": "no offer supplied"
+      }
+    },
+    {
+      "id": "B017",
+      "title": "The Psychology of Money",
+      "author": "Morgan Housel",
+      "status": "identified",
+      "identification_basis": "sweep title matched to manual inventory",
+      "shelf": null,
+      "position": null,
+      "frame_ref": "frame-003.jpg",
+      "frame_refs": [
+        "frame-003.jpg"
+      ],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 10.99,
+        "used_usd": 4.75,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B0HKK9QTXB",
+        "listing_isbn": "9780857197696",
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B018",
+      "title": "羊道 深山夏牧场",
+      "author": "李娟",
+      "status": "identified",
+      "identification_basis": "sweep title matched to manual inventory",
+      "shelf": null,
+      "position": null,
+      "frame_ref": "frame-003.jpg",
+      "frame_refs": [
+        "frame-003.jpg"
+      ],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 22.99,
+        "used_usd": null,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B008XF75DY",
+        "listing_isbn": null,
+        "review": "verify print offer and edition"
+      }
+    },
+    {
+      "id": "B019",
+      "title": "Launch",
+      "author": "Jeff Walker",
+      "status": "identified",
+      "identification_basis": "sweep title matched to manual inventory",
+      "shelf": null,
+      "position": null,
+      "frame_ref": "frame-003.jpg",
+      "frame_refs": [
+        "frame-003.jpg"
+      ],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 11.53,
+        "used_usd": 2.53,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B08ZD8F8BR",
+        "listing_isbn": "9781401960247",
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B020",
+      "title": "Thinking in Systems",
+      "author": "Donella H. Meadows",
+      "status": "identified",
+      "identification_basis": "sweep title matched to manual inventory",
+      "shelf": null,
+      "position": null,
+      "frame_ref": "frame-002.jpg",
+      "frame_refs": [
+        "frame-002.jpg",
+        "frame-003.jpg"
+      ],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 14.29,
+        "used_usd": 6.14,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B005VSRFEA",
+        "listing_isbn": "9781603581486",
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B021",
+      "title": "麦肯锡方法",
+      "author": "埃森-拉塞尔",
+      "status": "identified",
+      "identification_basis": "human-corrected sweep candidate",
+      "shelf": null,
+      "position": null,
+      "frame_ref": "frame-002.jpg",
+      "frame_refs": [
+        "frame-002.jpg"
+      ],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 15.09,
+        "used_usd": 11.3,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/7111658906",
+        "listing_isbn": "9787111658900",
+        "review": "verify print offer and edition"
+      }
+    },
+    {
+      "id": "B022",
+      "title": "高盛在中国",
+      "author": "李德林",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": null,
+        "used_usd": null,
+        "used_condition": null,
+        "url": null,
+        "listing_isbn": null,
+        "review": "no offer supplied"
+      }
+    },
+    {
+      "id": "B023",
+      "title": "How to win friends & influence people",
+      "author": "Dale Carnegie",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 15.04,
+        "used_usd": 0.95,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/0671027034",
+        "listing_isbn": "9780671027032",
+        "review": "verify print offer and edition"
+      }
+    },
+    {
+      "id": "B024",
+      "title": "the War of ART",
+      "author": "Steven Pressfield",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 9.99,
+        "used_usd": 6.27,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B007A4SDCG",
+        "listing_isbn": null,
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B025",
+      "title": "the 48 laws of Power",
+      "author": "Robert Greene",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 16.99,
+        "used_usd": 4.95,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B0024CEZR6",
+        "listing_isbn": "9781101042458",
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B026",
+      "title": "The art of seduction",
+      "author": "Robert Greene",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": 18.99,
+        "used_usd": 7.95,
+        "used_condition": null,
+        "url": "https://www.amazon.com/dp/B0032BW5DY",
+        "listing_isbn": "9781101175293",
+        "review": "ebook URL; verify print offer"
+      }
+    },
+    {
+      "id": "B027",
+      "title": "道德经",
+      "author": "陈忠",
+      "status": "unidentified",
+      "identification_basis": "manual inventory only",
+      "shelf": null,
+      "position": null,
+      "frame_ref": null,
+      "frame_refs": [],
+      "edition": null,
+      "isbn": null,
+      "spine_height_cm": null,
+      "spine_thickness_cm": null,
+      "id_confidence": null,
+      "replacement_cost": null,
+      "used_value": null,
+      "user_supplied_quotes": {
+        "new_usd": null,
+        "used_usd": null,
+        "used_condition": null,
+        "url": null,
+        "listing_isbn": null,
+        "review": "no offer supplied"
+      }
+    }
+  ],
+  "items": [],
+  "totals": {
+    "book_count": null,
+    "books_identified": 9,
+    "books_unidentified": null,
+    "shelf_run_m": null,
+    "books_replacement_cost": null,
+    "books_used_value": null,
+    "items_replacement_cost_low": null,
+    "items_replacement_cost_high": null,
+    "excluded_from_totals": null
+  },
+  "review_queue": [
+    {
+      "ref_id": "room",
+      "reason": "No calibrated room measurement available."
+    },
+    {
+      "ref_id": "frame-001.jpg",
+      "reason": "Frame needs a clearer view or manual title review."
+    },
+    {
+      "ref_id": "frame-003.jpg",
+      "reason": "Frame needs a clearer view or manual title review."
+    },
+    {
+      "ref_id": "B001",
+      "reason": "No matched frame in this sweep. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B002",
+      "reason": "No matched frame in this sweep. One or more spreadsheet quotes unavailable. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B003",
+      "reason": "No matched frame in this sweep. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B004",
+      "reason": "No matched frame in this sweep. One or more spreadsheet quotes unavailable."
+    },
+    {
+      "ref_id": "B005",
+      "reason": "No matched frame in this sweep. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B006",
+      "reason": "No matched frame in this sweep. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B007",
+      "reason": "No matched frame in this sweep. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B008",
+      "reason": "No matched frame in this sweep. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B009",
+      "reason": "No matched frame in this sweep. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B010",
+      "reason": "No matched frame in this sweep. One or more spreadsheet quotes unavailable."
+    },
+    {
+      "ref_id": "B011",
+      "reason": "No matched frame in this sweep. One or more spreadsheet quotes unavailable."
+    },
+    {
+      "ref_id": "B012",
+      "reason": "One or more spreadsheet quotes unavailable."
+    },
+    {
+      "ref_id": "B013",
+      "reason": "Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B014",
+      "reason": "Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B015",
+      "reason": "Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B016",
+      "reason": "No matched frame in this sweep. One or more spreadsheet quotes unavailable."
+    },
+    {
+      "ref_id": "B017",
+      "reason": "Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B018",
+      "reason": "One or more spreadsheet quotes unavailable. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B019",
+      "reason": "Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B020",
+      "reason": "Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B021",
+      "reason": "Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B022",
+      "reason": "No matched frame in this sweep. One or more spreadsheet quotes unavailable."
+    },
+    {
+      "ref_id": "B023",
+      "reason": "No matched frame in this sweep. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B024",
+      "reason": "No matched frame in this sweep. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B025",
+      "reason": "No matched frame in this sweep. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B026",
+      "reason": "No matched frame in this sweep. Spreadsheet quote requires print edition and offer verification."
+    },
+    {
+      "ref_id": "B027",
+      "reason": "No matched frame in this sweep. One or more spreadsheet quotes unavailable."
+    }
+  ],
+  "evidence": [
+    {
+      "frame_ref": "frame-001.jpg",
+      "transcript": "I can't see any books in this frame."
+    },
+    {
+      "frame_ref": "frame-002.jpg",
+      "transcript": "Book title: Mastering the Market Cycle. Book title: Uptime. Book title: The HyperLocal HyperFast Real Estate Agent. Book title: 围城. Book title: 西方哲学史. Book title: Thinking in Systems."
+    },
+    {
+      "frame_ref": "frame-003.jpg",
+      "transcript": "Please adjust the view to avoid blocking the titles with your finger. Book title: Thinking in Systems. Book title: Launch. Book title: 羊道 深山夏牧场. Book title: The Psychology of Money. Unreadable spine."
+    }
+  ],
+  "inventory_candidates": [
+    {
+      "title": "Mastering the Market Cycle",
+      "frame_refs": [
+        "frame-002.jpg"
+      ]
+    },
+    {
+      "title": "Uptime",
+      "frame_refs": [
+        "frame-002.jpg"
+      ]
+    },
+    {
+      "title": "The HyperLocal HyperFast Real Estate Agent",
+      "frame_refs": [
+        "frame-002.jpg"
+      ]
+    },
+    {
+      "title": "围城",
+      "frame_refs": [
+        "frame-002.jpg"
+      ]
+    },
+    {
+      "title": "西方哲学史",
+      "frame_refs": [
+        "frame-002.jpg"
+      ]
+    },
+    {
+      "title": "Thinking in Systems",
+      "frame_refs": [
+        "frame-002.jpg",
+        "frame-003.jpg"
+      ]
+    },
+    {
+      "title": "Launch",
+      "frame_refs": [
+        "frame-003.jpg"
+      ]
+    },
+    {
+      "title": "羊道 深山夏牧场",
+      "frame_refs": [
+        "frame-003.jpg"
+      ]
+    },
+    {
+      "title": "The Psychology of Money",
+      "frame_refs": [
+        "frame-003.jpg"
+      ]
+    }
+  ],
+  "corrections": [
+    {
+      "book_id": "B021",
+      "model_title": "西方哲学史",
+      "reviewed_title": "麦肯锡方法",
+      "frame_ref": "frame-002.jpg",
+      "source": "User review"
+    }
+  ],
+  "manual_baseline": {
+    "book_count": 27,
+    "quote_totals": {
+      "new_usd": {
+        "count": 20,
+        "total_usd": "304.03"
+      },
+      "used_usd": {
+        "count": 18,
+        "total_usd": "83.01"
+      },
+      "books_without_quotes": 7
+    },
+    "source": "User workbook, Cozmo AI.xlsx, Sheet1"
+  },
+  "evidence_availability": "Images withheld in the public release. Frame references resolve in the private submission."
+}

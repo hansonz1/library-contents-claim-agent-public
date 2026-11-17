@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spine measurement calibration</title>
+<style>
+  body { font: 16px system-ui; max-width: 65rem; margin: 2rem auto; padding: 0 1rem; }
+  label { display: inline-block; margin: .4rem; }
+  input[type=number] { width: 5rem; }
+  canvas { display: block; max-width: 100%; height: auto; cursor: crosshair; }
+</style>
+<h1>Spine measurement calibration</h1>
+<p>Select two ruler ticks, then two spine edges along the same axis. The photo stays in your browser.</p>
+<label>Photo <input id="photo" type="file" accept="image/*"></label>
+<label>Distance between ruler ticks (cm) <input id="reference" type="number" min="0.01" step="any" value="10"></label>
+<label>Manual measurement (cm, optional) <input id="truth" type="number" min="0.01" step="any"></label>
+<label><input id="snap" type="checkbox"> Compare manual and snapped edges (thickness)</label>
+<button id="reset" type="button">Reset points</button>
+<p id="result" role="status">Select a photo first.</p>
+<canvas id="photo-canvas" hidden></canvas>
+<script>
+const photo = document.querySelector("#photo");
+const canvas = document.querySelector("#photo-canvas");
+const result = document.querySelector("#result");
+const reference = document.querySelector("#reference");
+const truth = document.querySelector("#truth");
+const snap = document.querySelector("#snap");
+const context = canvas.getContext("2d");
+const labels = ["the first ruler tick", "the second ruler tick", "the first spine edge", "the second spine edge"];
+let bitmap;
+let points = [];
+let revision = 0;
+
+function draw() {
+  context.drawImage(bitmap, 0, 0);
+  points.forEach(({x, y}, index) => {
+    const size = Math.max(canvas.width, canvas.height) / 130;
+    context.fillStyle = "#bf3500";
+    context.beginPath();
+    context.arc(x, y, size / 2, 0, 2 * Math.PI);
+    context.fill();
+    context.fillStyle = "white";
+    context.font = size + "px system-ui";
+    context.fillText(String(index + 1), x + size, y);
+  });
+}
+
+function distance(first, second) {
+  return Math.hypot(first.x - second.x, first.y - second.y);
+}
+
+function snapEdge(x, y) {
+  const radius = Math.max(2, Math.round(canvas.width / 320));
+  const left = Math.max(0, Math.floor(x) - radius - 2);
+  const right = Math.min(canvas.width, Math.floor(x) + radius + 3);
+  const top = Math.max(0, Math.floor(y) - radius);
+  const height = Math.min(canvas.height - top, 2 * radius + 1);
+  const width = right - left;
+  const pixels = context.getImageData(left, top, width, height).data;
+  let best = x;
+  let strength = 0;
+  for (let column = 2; column < width - 2; column++) {
+    let score = 0;
+    for (let row = 0; row < height; row++) {
+      const index = (row * width + column) * 4;
+      for (let channel = 0; channel < 3; channel++) {
+        score += Math.abs(pixels[index - 8 + channel] - pixels[index + 8 + channel]);
+      }
+    }
+    if (score > strength) {
+      strength = score;
+      best = left + column;
+    }
+  }
+  return best;
+}
+
+async function updateResult() {
+  const current = ++revision;
+  if (!bitmap) return;
+  if (points.length < 4) {
+    result.textContent = "Select " + labels[points.length] + ".";
+    return;
+  }
+  const referencePixels = distance(points[0], points[1]);
+  const spinePixels = distance(points[2], points[3]);
+  if (!reference.checkValidity() || reference.valueAsNumber <= 0 ||
+      !reference.value || !truth.checkValidity() || !referencePixels || !spinePixels) {
+    result.textContent = "Check the distances and selected points.";
+    return;
+  }
+  async function convert(pixelDistance) {
+    const query = new URLSearchParams({
+      reference_px: referencePixels,
+      reference_cm: reference.value,
+      spine_px: pixelDistance,
+    });
+    const response = await fetch("/measure/convert?" + query);
+    if (!response.ok) throw new Error();
+    return (await response.json()).spine_cm;
+  }
+
+  function format(label, value) {
+    const measured = truth.valueAsNumber;
+    const error = measured > 0 ? Math.abs(value - measured) / measured * 100 : null;
+    return label + value.toFixed(2) + " cm" +
+      (error === null ? "" : ", relative error " + error.toFixed(2) + "%");
+  }
+
+  try {
+    const estimates = [convert(spinePixels)];
+    if (snap.checked) {
+      context.drawImage(bitmap, 0, 0);
+      const edges = points.slice(2).map(point => ({
+        x: snapEdge(point.x, point.y),
+        y: point.y,
+      }));
+      draw();
+      const snappedPixels = distance(edges[0], edges[1]);
+      estimates.push(snappedPixels > 0 ? convert(snappedPixels) : null);
+    }
+    const [manual, snapped] = await Promise.all(estimates);
+    if (current !== revision) return;
+    result.textContent = format("Manual estimate ", manual);
+    if (snapped !== undefined) {
+      result.textContent += snapped === null
+        ? " | 吸附后两点重合，请Reset points."
+        : " | " + format("Snapped estimate ", snapped);
+    }
+  } catch {
+    if (current === revision) result.textContent = "Conversion failed. Check that the local server is running.";
+  }
+}
+
+function reset() {
+  points = [];
+  if (bitmap) draw();
+  updateResult();
+}
+
+photo.onchange = async () => {
+  const current = ++revision;
+  bitmap?.close();
+  bitmap = undefined;
+  canvas.hidden = true;
+  if (!photo.files.length) {
+    result.textContent = "Select a photo first.";
+    return;
+  }
+  try {
+    const nextBitmap = await createImageBitmap(photo.files[0]);
+    if (current !== revision) {
+      nextBitmap.close();
+      return;
+    }
+    bitmap = nextBitmap;
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    canvas.hidden = false;
+    reset();
+  } catch {
+    if (current === revision) result.textContent = "Could not open photo. Choose a JPG or PNG.";
+  }
+};
+
+canvas.onclick = event => {
+  if (!bitmap || points.length === 4) return;
+  const bounds = canvas.getBoundingClientRect();
+  const point = {
+    x: (event.clientX - bounds.left) * canvas.width / bounds.width,
+    y: (event.clientY - bounds.top) * canvas.height / bounds.height,
+  };
+  points.push(point);
+  draw();
+  updateResult();
+};
+
+document.querySelector("#reset").onclick = reset;
+snap.onchange = updateResult;
+reference.oninput = truth.oninput = () => {
+  if (bitmap) updateResult();
+};
+</script>
+</html>
