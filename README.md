@@ -62,6 +62,10 @@ Open `draft-packet/report.html`. Follow a frame link to inspect the source image
 
 For the spine calibration tool, open [http://127.0.0.1:8000/measure](http://127.0.0.1:8000/measure), load a photo with a ruler in the same plane as the spine, and click two ruler ticks followed by two spine edges along the same axis. Enter the known distance between ticks. The photo stays in your browser.
 
+## Scope of this take-home
+
+This prototype was developed within the assignment's 48-hour window. It demonstrates a short bookshelf sweep, Gemini Live voice feedback and questions, candidate book identification, and claim packet export. The evaluation and failure log document which checks were completed and which requirements remain open.
+
 ## Evaluation and limitations
 
 - [Evaluation results](submission/EVALUATION.md) and [manual baseline](submission/ground-truth.csv)
